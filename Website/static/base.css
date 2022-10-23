@@ -1,0 +1,42 @@
+h1 {
+    border: 2px rgb(0, 0, 0) solid;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    padding: 15px;
+    margin-left: 80px;
+    margin-right: 80px;
+    background-color: rgb(35, 7, 160);
+}
+
+h2 {
+    color: rgb(255, 255, 255);
+    text-align: center;
+    padding: 5px;
+}
+
+.nav {
+    display: inline;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 10px;
+    color: rgb(0, 0, 0);
+}
+
+a {
+    color: rgb(255, 255, 255);
+    text-decoration: inherit;
+  }
+  
+.body_txt {
+    color: rgb(255, 255, 255);
+    border: 2px rgb(0, 0, 0) solid;
+    text-align: center;
+    padding: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+    background-color: rgb(35, 7, 160);
+}
+
+body {
+    background-color: rgb(192, 192, 192);
+  }

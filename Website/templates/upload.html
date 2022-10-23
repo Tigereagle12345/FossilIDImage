@@ -1,0 +1,44 @@
+{%extends "base.html" %}
+{%block content%}
+  
+<p>
+    <h3>Welcome to the image upload location!</h3>
+    To upload an image, please take a photo of your fossil from directly above and with a centimeter long object in the far left of the image like so.
+</p><image src="{{url_for('static',filename = 'example.jpg')}}" 
+width="200" 
+height="100">
+<div></div>
+This is necessary in order to measure the fossil in the photograph so that we can determine the size. Alternatly, you can measure the fossil yourself and input the size in the correct boxes. Please try to take the image from directly above the fossil, as it makes it easier to determine the size as well as standardizes the images. Then, simply upload the file to our platform, and it will be added to our database of images and be used to train the AI. Thank You!
+
+<h2>Upload Below!</h2>
+<div></div>
+<h3>Please input which class the fossil should be under!</h3>
+
+<div></div>
+
+<form action = "http://localhost:5000/upload_complete" action="/select" method = "POST"
+ enctype = "multipart/form-data">
+
+ <select name="im_type" method="GET" action="http://localhost:5000/upload_complete">
+  <option value="{{classes[0]}}" selected>{{classes[0]}} </option>
+  {% for cat in classes[1:] %}
+    <option value="{{cat}}">{{cat}}</option>
+  {% endfor %}
+</select>
+
+<input type = "file" name = "file" />
+<input type = "submit" value = "Submit" />
+</form>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+{% endblock %}

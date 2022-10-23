@@ -1,41 +1,114 @@
-# TensorFlow and tf.keras
-import tensorflow as tf
-from tensorflow.keras import layers
-
-# Helper libraries
 import numpy as np
-import matplotlib.pyplot as plt
 import os
-
-import pandas as pd
-
-# Make numpy values easier to read.
-np.set_printoptions(precision=3, suppress=True)
+import PIL
+import PIL.Image
+import tensorflow as tf
+import tensorflow_datasets as tfds
+from tensorflow import keras
 
 print(tf.__version__)
 
-fossils = pd.read_csv("FossilAITestDataSet.csv")
-fossils.head()
-fossil_features = fossils.copy()
+os.system("python process.py")
 
-inputs = {}
+import pathlib
+dataset_url = "D:/Eamon/Documents/GitHub/FossilIDImage/IdAI/main/train/dataset/fossils/"
+#data_dir = tf.keras.utils.get_file(origin=dataset_url, fname='fossil_photos', untar=False)
+#data_dir = pathlib.Path(data_dir)
 
-for name, column in fossil_features.items():
-  dtype = column.dtype
-  if dtype == object:
-    dtype = tf.string
-  else:
-    dtype = tf.float32
+#image_count = len(list(data_dir.glob('*/*.jpg')))
+#print(image_count)
 
-  inputs[name] = tf.keras.Input(shape=(1,), name=name, dtype=dtype)
+batch_size = 10
+img_height = 180
+img_width = 180
 
-print(inputs)
-numeric_inputs = {name:input for name,input in inputs.items()
-                  if input.dtype==tf.float32}
+train_ds = tf.keras.utils.image_dataset_from_directory(
+  dataset_url,
+  validation_split=0.2,
+  subset="training",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
 
-x = layers.Concatenate()(list(numeric_inputs.values()))
-norm = layers.Normalization()
-norm.adapt(np.array(titanic[numeric_inputs.keys()]))
-all_numeric_inputs = norm(x)
+val_ds = tf.keras.utils.image_dataset_from_directory(
+  dataset_url,
+  validation_split=0.2,
+  subset="validation",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
 
-print("all_numeric_inputs")
+class_names = train_ds.class_names
+print(class_names)
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_ds.take(1):
+  for i in range(9):
+    ax = plt.subplot(3, 3, i + 1)
+    plt.imshow(images[i].numpy().astype("uint8"))
+    plt.title(class_names[labels[i]])
+    plt.axis("off")
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 10))
+for images, labels in train_ds.take(1):
+  for i in range(9):
+    ax = plt.subplot(3, 3, i + 1)
+    plt.imshow(images[i].numpy().astype("uint8"))
+    plt.title(class_names[labels[i]])
+    plt.axis("off")
+
+for image_batch, labels_batch in train_ds:
+  print(image_batch.shape)
+  print(labels_batch.shape)
+  break
+
+normalization_layer = tf.keras.layers.Rescaling(1./255)
+
+normalized_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
+image_batch, labels_batch = next(iter(normalized_ds))
+first_image = image_batch[0]
+# Notice the pixel values are now in `[0,1]`.
+print(np.min(first_image), np.max(first_image))
+
+AUTOTUNE = tf.data.AUTOTUNE
+
+train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
+val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
+
+num_classes = 5
+
+model = tf.keras.Sequential([
+  tf.keras.layers.Rescaling(1./255),
+  tf.keras.layers.Conv2D(32, 3, activation='relu'),
+  tf.keras.layers.MaxPooling2D(),
+  tf.keras.layers.Conv2D(32, 3, activation='relu'),
+  tf.keras.layers.MaxPooling2D(),
+  tf.keras.layers.Conv2D(32, 3, activation='relu'),
+  tf.keras.layers.MaxPooling2D(),
+  tf.keras.layers.Flatten(),
+  tf.keras.layers.Dense(128, activation='relu'),
+  tf.keras.layers.Dense(num_classes)
+])
+
+model.compile(
+  optimizer='adam',
+  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+  metrics=['accuracy'])
+
+model.fit(
+  train_ds,
+  validation_data=val_ds,
+  epochs=3
+)
+
+model.save('test_model.h5')
+
+# Recreate the exact same model, including its weights and the optimizer
+#new_model = tf.keras.models.load_model('test_model.h5')
+
+# Show the model architecture
+#new_model.summary()
