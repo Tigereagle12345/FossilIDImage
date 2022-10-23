@@ -3,5 +3,23 @@
   
 <h3>Nothing to see here yet!</h3>
 <p>This will become a page where you can use the AI. However, the AI currently doesn't have enought training images! Please go to <a href="{{ url_for('upload') }}">Upload Images</a> to upload images and get the AI up and running!<p>
-  
+
+<div></div>
+
+<form action = "http://localhost:5000/guess" method = "POST"
+    enctype = "multipart/form-data">
+   <input type = "file" name = "file" />
+   <input type = "submit" value = "Submit" />
+   </form>
+
+   {% with messages = get_flashed_messages() %}
+   {% if messages %}
+     <ul class=flashes>
+     {% for message in messages %}
+       <li>{{ message }}</li>
+     {% endfor %}
+     </ul>
+   {% endif %}
+ {% endwith %}
+
 {% endblock %}

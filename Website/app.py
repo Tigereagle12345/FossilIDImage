@@ -4,6 +4,7 @@ import os
 from PIL import Image
 from pathlib import Path
 import uuid
+import guess
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -15,6 +16,10 @@ app.config['UPLOAD_FOLDER'] = "D:/Eamon/Documents/GitHub/FossilIDImage/Website/u
 def main():
 	return redirect(url_for('home'))
 
+@app.route('/mail')
+def mail():
+	return redirect("mailto:fossilai937@gmail.com?subject='Email to FossilAI'")
+
 @app.route('/home')
 def home():
 	return render_template("home.html", page="Home")
@@ -23,9 +28,35 @@ def home():
 def use():
 	return render_template("use.html", page="Use The AI")
 
+@app.route('/guess', methods = ['GET', 'POST'])
+def make_guess():
+	if request.method == 'POST':
+		f = request.files['file']
+		if 'file' in request.files:
+			if f.filename == "":
+				flash("You need to select a file!")
+			else:
+				if check_extension(f.filename):
+					hash_value = uuid.uuid4().hex
+					image_path = os.path.join("D:/Eamon/Documents/GitHub/FossilIDImage/Website/tmp", hash_value + secure_filename(f.filename))
+					f.save(image_path)
+					im = Image.open(image_path)
+					im = im.convert("RGB")
+					im_name = Path(str(image_path)).stem
+					im_name = str(im_name) + ".jpg"
+					im_path = os.path.join(secure_filename(im_name))
+					im.save(im_path)
+					pred_class = guess.predict(image_path)
+					return render_template("guess.html", page="Upload Complete", pred_class=pred_class)
+				else:
+					flash("Your files are not in a valid format! Please convert them to .jpg, .jpeg or .png files.")
+		else:
+			flash("You need to select a file!")
+	return redirect(url_for("use"))
+
 @app.route('/upload')
 def upload():
-	classes = ["-Select Class-", "Ammonite", "Trilobite", "Shark Tooth"]
+	classes = ["-Select Class-", "Ammonite", "Trilobite"]
 	return render_template("upload.html", page="Upload Images", classes=classes)
 
 @app.route('/error/<num>')
@@ -55,9 +86,9 @@ def upload_complete():
 						hash_value = uuid.uuid4().hex
 						image_path = os.path.join(app.config['UPLOAD_FOLDER'], hash_value + secure_filename(f.filename))
 						f.save(image_path)
-						im_path = preprocess(image_path)
+						im_path = preprocess(image_path, im_type)
 						file_list = open("images.txt", "a")
-						file_list.write(str(im_path) + " - " + im_type + "\n")
+						file_list.write(str(im_path) + "\n")
 						file_list.close()
 						return render_template("upload_complete.html", page="Upload Complete")
 					else:
@@ -75,14 +106,14 @@ def check_extension(filename):
 	else:
 		return False
 
-def preprocess(image_path):
+def preprocess(image_path, im_type):
 	# Opens a image in RGB mode
 	im = Image.open(image_path)
 	im = im.convert("RGB")
 	im = im.resize((180, 180))
 	im_name = Path(str(image_path)).stem
 	im_name = str(im_name) + ".jpg"
-	im_path = os.path.join(app.config['UPLOAD_FOLDER'] + "/" + secure_filename(im_name))
+	im_path = os.path.join(app.config['UPLOAD_FOLDER'] + "/" + im_type + "/" + secure_filename(im_name))
 	im.save(im_path)
 	if not image_path[image_path.rindex(".")+1:] in ["jpg", "jpeg"]:
 		os.remove(image_path)

@@ -19,11 +19,16 @@ h2 {
     margin-left: 10px;
     margin-right: 10px;
     padding: 10px;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+}
+
+.nav:hover {
+    color: rgb(48, 171, 219);
+    background-color: rgb(27, 6, 121);
 }
 
 a {
-    color: rgb(255, 255, 255);
+    color: inherit;
     text-decoration: inherit;
   }
   
@@ -40,3 +45,8 @@ a {
 body {
     background-color: rgb(192, 192, 192);
   }
+
+.foot {
+    text-align: center;
+
+}

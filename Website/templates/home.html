@@ -1,6 +1,11 @@
 {%extends "base.html" %}
 {%block content%}
-  
-Test1
-  
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='home.css') }}">
+
+Welcom to the Fossil AI website, an open-source AI to identify fossils! This AI was built using tensorflow and trained on both publicly and privatly sourced images. If you would like to use the AI, go to the 'Use the AI' button at the top of your screen. If you would like to contribute to the images used to train the AI, go to the 'Upload Images' button at the top of the screen!
+
+<div></div>
+To find the source code, please go to the GitHub Repository found <div class="link"><a href="https://github.com/Tigereagle12345/FossilIDImage">here.</a></div>
+ 
 {% endblock %}

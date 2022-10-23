@@ -5,6 +5,7 @@ import PIL.Image
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow import keras
+import matplotlib.pyplot as plt
 
 print(tf.__version__)
 
@@ -41,8 +42,6 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
 class_names = train_ds.class_names
 print(class_names)
 
-import matplotlib.pyplot as plt
-
 plt.figure(figsize=(10, 10))
 for images, labels in train_ds.take(1):
   for i in range(9):
@@ -50,8 +49,6 @@ for images, labels in train_ds.take(1):
     plt.imshow(images[i].numpy().astype("uint8"))
     plt.title(class_names[labels[i]])
     plt.axis("off")
-
-import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 10))
 for images, labels in train_ds.take(1):
@@ -90,7 +87,7 @@ model = tf.keras.Sequential([
   tf.keras.layers.Conv2D(32, 3, activation='relu'),
   tf.keras.layers.MaxPooling2D(),
   tf.keras.layers.Flatten(),
-  tf.keras.layers.Dense(128, activation='relu'),
+  tf.keras.layers.Dense(128, activation='relux'),
   tf.keras.layers.Dense(num_classes)
 ])
 
