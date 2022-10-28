@@ -47,6 +47,8 @@ def make_guess():
 					im_path = os.path.join(secure_filename(im_name))
 					im.save(im_path)
 					pred_class = guess.predict(image_path)
+					os.remove(image_path)
+					os.remove(im_path)
 					return render_template("guess.html", page="Upload Complete", pred_class=pred_class)
 				else:
 					flash("Your files are not in a valid format! Please convert them to .jpg, .jpeg or .png files.")
