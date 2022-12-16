@@ -18,7 +18,7 @@ def main():
 
 @app.route('/mail')
 def mail():
-	return redirect("mailto:fossilai937@gmail.com?subject='Email to FossilAI'")
+	return redirect("mailto:fossilai937@gmail.com")
 
 @app.route('/home')
 def home():
